@@ -28,7 +28,7 @@ Route::get('/', function () {
 })->name('home');
 
 // Admin routes
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     
     // User management
@@ -67,7 +67,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 // Warehouse manager routes
-Route::prefix('warehouse')->name('warehouse.')->group(function () {
+Route::prefix('warehouse')->name('warehouse.')->middleware(['auth', 'role:almacenero'])->group(function () {
     Route::get('/dashboard', [WarehouseController::class, 'dashboard'])->name('dashboard');
     Route::get('/inventory', [WarehouseController::class, 'inventory'])->name('inventory');
     
@@ -83,7 +83,7 @@ Route::prefix('warehouse')->name('warehouse.')->group(function () {
 });
 
 // Sales point manager routes
-Route::prefix('sales-point')->name('sales-point.')->group(function () {
+Route::prefix('sales-point')->name('sales-point.')->middleware(['auth', 'role:punto'])->group(function () {
     Route::get('/dashboard', [SalesPointController::class, 'dashboard'])->name('dashboard');
     Route::get('/inventory', [SalesPointController::class, 'inventory'])->name('inventory');
     

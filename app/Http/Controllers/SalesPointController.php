@@ -13,10 +13,7 @@ use Carbon\Carbon;
 
 class SalesPointController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth', 'role:punto']);
-    }
+
 
     public function dashboard()
     {
