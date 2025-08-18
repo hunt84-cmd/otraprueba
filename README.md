@@ -1,61 +1,194 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de Gestión de Inventario - Laravel
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Un sistema completo para gestionar puntos de ventas, almacenes y productos con roles de usuario y sistema de aprobaciones.
 
-## About Laravel
+## Características Principales
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 🏢 Gestión de Entidades
+- **Almacenes**: Gestión completa con asignación de encargados
+- **Puntos de Venta**: Vinculados a almacenes específicos
+- **Productos**: Catálogo con códigos únicos, unidades de medida (kg, lb, unidad)
+- **Inventario**: Control en tiempo real de stock en almacenes y puntos de venta
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 👥 Sistema de Usuarios y Roles
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+#### Administrador (admin)
+- Gestiona usuarios, roles y permisos
+- Crea y configura almacenes y puntos de venta
+- Gestiona catálogo de productos
+- Crea órdenes de entrada a almacenes
+- Supervisa todas las operaciones del sistema
 
-## Learning Laravel
+#### Almacenero (almacenero)
+- Gestiona el inventario de su almacén asignado
+- Aprueba/rechaza entradas de productos
+- Crea órdenes de transferencia a puntos de venta
+- Recibe devoluciones de puntos de venta
+- Controla movimientos de inventario
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+#### Punto de Venta (punto)
+- Gestiona el inventario de su punto de venta
+- Aprueba/rechaza recepciones de almacén
+- Registra ventas diarias (IPV)
+- Crea órdenes de devolución a almacén
+- Genera reportes de ventas
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 📋 Sistema de Órdenes y Aprobaciones
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Todas las operaciones entre entidades requieren:
+1. **Creación de orden** por el solicitante
+2. **Aprobación** por el receptor
+3. **Ejecución automática** tras aprobación
+4. **Registro de movimientos** de inventario
 
-## Laravel Sponsors
+#### Tipos de Órdenes
+- **Entrada a Almacén**: Admin → Almacenero
+- **Transferencia**: Almacenero → Punto de Venta
+- **Devolución**: Punto de Venta → Almacenero
+- **Venta**: Registro directo en punto de venta
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 💰 Gestión de Precios
+- **Precio de Costo**: Precio al que ingresa al almacén
+- **Precio de Venta**: Precio diferente en cada punto de venta
+- **Cálculo automático** de valores de inventario
 
-### Premium Partners
+## Estructura de la Base de Datos
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Tablas Principales
+- `users` - Usuarios del sistema con roles
+- `roles` - Roles del sistema (admin, almacenero, punto)
+- `warehouses` - Almacenes
+- `sales_points` - Puntos de venta
+- `products` - Catálogo de productos
+- `warehouse_inventory` - Inventario en almacenes
+- `sales_point_inventory` - Inventario en puntos de venta
+- `orders` - Órdenes entre entidades
+- `order_items` - Productos en cada orden
+- `inventory_movements` - Historial de movimientos
+- `daily_sales` - Resumen de ventas por día
+- `sales_transactions` - Transacciones individuales de venta
 
-## Contributing
+## Instalación y Configuración
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Prerrequisitos
+- PHP 8.2+
+- Composer
+- MySQL/PostgreSQL/SQLite
+- Node.js y NPM (para assets)
 
-## Code of Conduct
+### Pasos de Instalación
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. **Instalar dependencias:**
+```bash
+composer install
+npm install
+```
 
-## Security Vulnerabilities
+2. **Configurar entorno:**
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3. **Configurar base de datos en `.env`:**
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=inventory_system
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
 
-## License
+4. **Ejecutar migraciones y seeders:**
+```bash
+php artisan migrate
+php artisan db:seed
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+5. **Compilar assets:**
+```bash
+npm run build
+```
+
+6. **Iniciar servidor:**
+```bash
+php artisan serve
+```
+
+## Usuarios de Prueba
+
+El sistema incluye usuarios de prueba con la contraseña `password`:
+
+- **Admin**: admin@inventory.com
+- **Almacenero 1**: almacenero1@inventory.com
+- **Almacenero 2**: almacenero2@inventory.com
+- **Punto 1**: punto1@inventory.com
+- **Punto 2**: punto2@inventory.com
+
+## Flujo de Operaciones
+
+### 1. Entrada de Productos al Almacén
+1. Admin crea orden de entrada
+2. Almacenero recibe y aprueba/rechaza
+3. Sistema actualiza inventario automáticamente
+
+### 2. Transferencia a Punto de Venta
+1. Almacenero crea orden de transferencia
+2. Punto de venta recibe y aprueba/rechaza
+3. Sistema transfiere inventario automáticamente
+
+### 3. Venta en Punto de Venta
+1. Punto registra venta directamente
+2. Sistema reduce inventario automáticamente
+3. Se actualiza el resumen diario (IPV)
+
+### 4. Devolución al Almacén
+1. Punto crea orden de devolución
+2. Almacenero recibe y aprueba/rechaza
+3. Sistema transfiere inventario de vuelta
+
+## Características Técnicas
+
+### Seguridad
+- Autenticación mediante Laravel Breeze
+- Middleware de roles personalizado
+- Protección CSRF en formularios
+- Validación de permisos por operación
+
+### Base de Datos
+- Migraciones estructuradas
+- Relaciones Eloquent optimizadas
+- Índices para consultas eficientes
+- Integridad referencial
+
+### Interfaz de Usuario
+- Bootstrap 5 responsivo
+- Iconos Bootstrap Icons
+- Dashboard específico por rol
+- Formularios dinámicos con JavaScript
+
+### Funcionalidades Avanzadas
+- Cálculo automático de precios promedio ponderado
+- Historial completo de movimientos de inventario
+- Reportes de ventas por período
+- Sistema de notificaciones de stock bajo
+- Validación de disponibilidad en tiempo real
+
+## API y Extensiones Futuras
+
+El sistema está preparado para:
+- API REST para integración con otros sistemas
+- Reportes avanzados y analytics
+- Sistema de notificaciones push
+- Integración con códigos de barras
+- Módulo de facturación
+- Dashboard con gráficos en tiempo real
+
+## Soporte y Mantenimiento
+
+Para soporte técnico o consultas sobre el sistema, contacte al equipo de desarrollo.
+
+---
+
+**Desarrollado con Laravel 12** - Sistema robusto y escalable para gestión de inventario empresarial.
