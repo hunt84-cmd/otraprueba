@@ -21,6 +21,21 @@
             min-height: 100vh;
             background-color: #343a40;
         }
+        @media (max-width: 767.98px) {
+            .sidebar {
+                position: fixed;
+                z-index: 1030;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                width: 75%;
+                max-width: 280px;
+                overflow-y: auto;
+            }
+            body.bg-light {
+                padding-left: 0;
+            }
+        }
         .sidebar .nav-link {
             color: #adb5bd;
             padding: 0.75rem 1rem;
@@ -57,7 +72,7 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
                 <div class="position-sticky pt-3">
                     <div class="text-center mb-3">
                         <h5 class="text-white">Sistema de Inventario</h5>
@@ -94,6 +109,16 @@
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('admin.orders*') ? 'active' : '' }}" href="{{ route('admin.orders') }}">
                                     <i class="bi bi-clipboard-check"></i> Órdenes
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('admin.reports.sales') ? 'active' : '' }}" href="{{ route('admin.reports.sales') }}">
+                                    <i class="bi bi-bar-chart"></i> Reporte Ventas
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('admin.inventory*') ? 'active' : '' }}" href="{{ route('admin.inventory.overview') }}">
+                                    <i class="bi bi-boxes"></i> Inventarios
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -162,7 +187,12 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
                 <!-- Top navbar -->
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">@yield('page-title', 'Dashboard')</h1>
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-outline-secondary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Alternar navegación">
+                            <i class="bi bi-list"></i>
+                        </button>
+                        <h1 class="h2 mb-0">@yield('page-title', 'Dashboard')</h1>
+                    </div>
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
