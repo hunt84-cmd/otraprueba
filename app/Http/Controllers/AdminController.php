@@ -8,6 +8,10 @@ use App\Models\Warehouse;
 use App\Models\SalesPoint;
 use App\Models\Product;
 use App\Models\Order;
+use App\Models\DailySale;
+use App\Models\WarehouseInventory;
+use App\Models\SalesPointInventory;
+use Carbon\Carbon;
 use App\Services\OrderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -28,6 +32,95 @@ class AdminController extends Controller
         ];
 
         return view('admin.dashboard', compact('stats'));
+    }
+
+    // Reports: Sales by sales points (daily, monthly, custom range)
+    public function salesReportAdmin(Request $request)
+    {
+        $salesPoints = SalesPoint::with('warehouse')->where('is_active', true)->get();
+
+        $salesPointId = (int) $request->get('sales_point_id', 0);
+        $period = $request->get('period', 'daily'); // daily | monthly | range
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+
+        $selectedSalesPoint = $salesPointId ? SalesPoint::find($salesPointId) : null;
+
+        $rangeStart = $startDate ? Carbon::parse($startDate) : Carbon::now()->startOfMonth();
+        $rangeEnd = $endDate ? Carbon::parse($endDate) : Carbon::now()->endOfMonth();
+
+        if ($period === 'daily') {
+            $rangeStart = Carbon::parse($request->get('date', now()->toDateString()));
+            $rangeEnd = $rangeStart;
+        } elseif ($period === 'monthly') {
+            $month = $request->get('month', now()->format('Y-m'));
+            $rangeStart = Carbon::parse($month.'-01')->startOfMonth();
+            $rangeEnd = (clone $rangeStart)->endOfMonth();
+        }
+
+        $query = DailySale::query()
+            ->with(['salesPoint', 'transactions.product'])
+            ->whereBetween('sale_date', [$rangeStart->toDateString(), $rangeEnd->toDateString()]);
+
+        if ($selectedSalesPoint) {
+            $query->where('sales_point_id', $selectedSalesPoint->id);
+        }
+
+        $dailySales = $query->orderBy('sale_date', 'asc')->get();
+
+        $totalAmount = $dailySales->sum('total_amount');
+        $totalTransactions = $dailySales->sum('total_transactions');
+
+        $productAggregation = [];
+        foreach ($dailySales as $dailySale) {
+            foreach ($dailySale->transactions as $txn) {
+                $pid = $txn->product_id;
+                if (!isset($productAggregation[$pid])) {
+                    $productAggregation[$pid] = [
+                        'product' => $txn->product,
+                        'quantity' => 0,
+                        'amount' => 0,
+                    ];
+                }
+                $productAggregation[$pid]['quantity'] += (float)$txn->quantity;
+                $productAggregation[$pid]['amount'] += (float)$txn->total_amount;
+            }
+        }
+
+        $productSales = array_values($productAggregation);
+
+        return view('admin.reports.sales', [
+            'salesPoints' => $salesPoints,
+            'selectedSalesPoint' => $selectedSalesPoint,
+            'period' => $period,
+            'rangeStart' => $rangeStart,
+            'rangeEnd' => $rangeEnd,
+            'dailySales' => $dailySales,
+            'totalAmount' => $totalAmount,
+            'totalTransactions' => $totalTransactions,
+            'productSales' => $productSales,
+        ]);
+    }
+
+    // Inventory overview for warehouses and sales points
+    public function inventoryOverview()
+    {
+        $warehouses = Warehouse::withCount('inventory')->get();
+        $salesPoints = SalesPoint::with(['warehouse'])->withCount('inventory')->get();
+
+        return view('admin.inventory.overview', compact('warehouses', 'salesPoints'));
+    }
+
+    public function inventoryWarehouse(Warehouse $warehouse)
+    {
+        $inventory = $warehouse->inventory()->with('product')->paginate(20);
+        return view('admin.inventory.warehouse', compact('warehouse', 'inventory'));
+    }
+
+    public function inventorySalesPoint(SalesPoint $salesPoint)
+    {
+        $inventory = $salesPoint->inventory()->with('product')->paginate(20);
+        return view('admin.inventory.sales-point', compact('salesPoint', 'inventory'));
     }
 
     // User Management

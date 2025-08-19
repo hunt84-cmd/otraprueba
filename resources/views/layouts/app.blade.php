@@ -97,6 +97,16 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('admin.reports.sales') ? 'active' : '' }}" href="{{ route('admin.reports.sales') }}">
+                                    <i class="bi bi-bar-chart"></i> Reporte Ventas
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('admin.inventory*') ? 'active' : '' }}" href="{{ route('admin.inventory.overview') }}">
+                                    <i class="bi bi-boxes"></i> Inventarios
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('admin.warehouse-entry*') ? 'active' : '' }}" href="{{ route('admin.warehouse-entry.create') }}">
                                     <i class="bi bi-plus-circle"></i> Entrada a Almacén
                                 </a>
