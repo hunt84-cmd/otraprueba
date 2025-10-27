@@ -64,6 +64,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::get('/orders/{order}', [AdminController::class, 'showOrder'])->name('orders.show');
     Route::get('/warehouse-entry/create', [AdminController::class, 'createWarehouseEntry'])->name('warehouse-entry.create');
     Route::post('/warehouse-entry', [AdminController::class, 'storeWarehouseEntry'])->name('warehouse-entry.store');
+
+    // Reports - Sales by sales points (daily, monthly, custom range)
+    Route::get('/reports/sales', [AdminController::class, 'salesReportAdmin'])->name('reports.sales');
+
+    // Inventory overview (warehouses and sales points)
+    Route::get('/inventory', [AdminController::class, 'inventoryOverview'])->name('inventory.overview');
+    Route::get('/inventory/warehouses/{warehouse}', [AdminController::class, 'inventoryWarehouse'])->name('inventory.warehouse');
+    Route::get('/inventory/sales-points/{salesPoint}', [AdminController::class, 'inventorySalesPoint'])->name('inventory.sales-point');
 });
 
 // Warehouse manager routes

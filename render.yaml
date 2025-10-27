@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: laravel-app
+    runtime: php
+    env: apache
+    buildCommand: |
+      composer install
+      cp .env.example .env
+      php artisan key:generate
+      php artisan config:cache
+      php artisan route:cache
+      php artisan view:cache
+    startCommand: php artisan serve --port=$PORT
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        value: base64:uOimY9mHzk40RqrP29sh058coX04HGaYaUfjP+5t8eA= # cambia esto
+      - key: DB_CONNECTION
+        value: sqlite

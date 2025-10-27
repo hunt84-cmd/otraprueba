@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Warehouse;
 use App\Models\Product;
 use App\Models\Order;
+use App\Models\SalesPoint;
 use App\Services\OrderService;
 use App\Services\InventoryService;
 use Illuminate\Http\Request;
